@@ -1,8 +1,38 @@
-class Customer {}
 
-class Reservation {}
+class Customer {           // Clase que permite representar a un cliente
+    constructor(id, name, email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
 
-class Restaurant {
+    get info() {
+        return `${this.name} (${this.email})`;
+    }
+}
+
+class Reservation {         // Inicializa las propiedades id, customer, date y guests.
+    constructor(id, customer, date, guests) {
+        this.id = id;
+        this.customer = customer;
+        this.date = new Date(date);
+        this.guests = guests;
+    }
+
+    get info() {            // Propiedad Computada info: Devuelve una cadena con la fecha y hora de la reserva,
+                            // la información del cliente y el número de comensales.
+        return `Fecha y hora: ${this.date.toLocaleString()}, Cliente: ${this.customer.info}, Número de comensales: ${this.guests}`;
+    }
+
+    static validateReservation(date, guests) {  // Método estático validateReservation: Verifica si la fecha de la reserva
+        // es posterior a la fecha actual y si el número de comensales es mayor a 0.
+        const reservationDate = new Date(date);
+        const currentDate = new Date();
+        return reservationDate > currentDate && guests > 0;
+    }
+}
+
+class Restaurant {         // Esta clase permite agregar y renderizar reservas
     constructor(name) {
         this.name = name;
         this.reservations = [];
@@ -35,6 +65,7 @@ class Restaurant {
             container.appendChild(reservationCard);
         });
     }
+    
 }
 
 document
@@ -66,6 +97,7 @@ document
 
             restaurant.addReservation(reservation);
             restaurant.render();
+
         } else {
             alert("Datos de reserva inválidos");
             return;
@@ -80,6 +112,13 @@ const reservation1 = new Reservation(1, customer1, "2024-12-31T20:00:00", 4);
 if (Reservation.validateReservation(reservation1.date, reservation1.guests)) {
     restaurant.addReservation(reservation1);
     restaurant.render();
+    /*ver porque no blanquea
+    document.getElementById("customer-name").value = '';
+    document.getElementById("customer-email").value = '';
+    document.getElementById("reservation-date").value = '';
+    document.getElementById("guests").value = '';*/
+
+    
 } else {
     alert("Datos de reserva inválidos");
 }
