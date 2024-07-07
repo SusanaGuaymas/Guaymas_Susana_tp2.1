@@ -21,7 +21,16 @@ class Card {
       `;
         return cardElement;
     }
-
+/*****Definir el método toggleFlip() que cambia el estado de volteo de la carta en función de su estado actual.
+     */
+    toggleFlip() {
+        this.isFlipped = !this.isFlipped;
+        if (this.isFlipped) {
+            this.#flip();
+        } else {
+            this.#unflip();
+        }
+    }   
     #flip() {
         const cardElement = this.element.querySelector(".card");
         cardElement.classList.add("flipped");
@@ -30,6 +39,11 @@ class Card {
     #unflip() {
         const cardElement = this.element.querySelector(".card");
         cardElement.classList.remove("flipped");
+    }
+
+    /******- Implementar el método matches(otherCard) que verifica si la carta actual coincide con otra carta.**** */
+    matches(otherCard) {
+        return this.name === otherCard.name;
     }
 }
 
@@ -56,6 +70,39 @@ class Board {
     #setGridColumns() {
         const columns = this.#calculateColumns();
         this.fixedGridElement.className = `fixed-grid has-${columns}-cols`;
+    }
+//Implementar el método shuffleCards() que mezcla las cartas del tablero. El criterio de mezcla esta 
+//dispuesto a elección del estudiante.
+
+    shuffleCards() {
+        for (let i = this.cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+        }
+    }
+
+    reset() {
+        this.shuffleCards();
+        this.flipDownAllCards();
+        this.render();
+    }
+// Implementar el método reset() que reinicia el tablero. Debe emplear otros métodos de la clase 
+// Board para realizar esta tarea.
+    reset() {
+        this.shuffleCards();
+        this.flipDownAllCards();
+        this.render();
+    }
+/*
+    - Implementar el método flipDownAllCards() que posiciona todas las cartas en su estado inicial.
+     Es necesario para reiniciar el tablero.
+    */
+    flipDownAllCards() {
+        this.cards.forEach(card => {
+            if (card.isFlipped) {
+                card.toggleFlip();
+            }
+        });
     }
 
     render() {
@@ -102,7 +149,35 @@ class MemoryGame {
             }
         }
     }
-}
+
+
+    checkForMatch() {
+        const [card1, card2] = this.flippedCards;
+
+        if (card1.matches(card2)) {
+            this.matchedCards.push(card1, card2);
+        } else {
+            card1.toggleFlip();
+            card2.toggleFlip();
+        }
+
+        this.flippedCards = [];
+
+        if (this.matchedCards.length === this.board.cards.length) {
+            alert("¡Has ganado!");
+            this.resetGame();
+        }
+    }
+
+    resetGame() {
+        this.flippedCards = [];
+        this.matchedCards = [];
+        this.board.reset();
+     }
+    }
+
+
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const cardsData = [
